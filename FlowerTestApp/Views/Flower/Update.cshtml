@@ -1,0 +1,36 @@
+﻿@using FlowerTestApp.Data.Model;
+@model Flower
+
+<div class="row orderForm">
+    <form asp-controller="Flower" asp-action="Update" method="post" class="form-horizontal" role="form">
+        <h3 class="col-md-offset-2">Edit flower @Model.FlowerId</h3>
+        @Html.HiddenFor(m => Model.FlowerId)
+        <div class="form-group">
+            <label asp-for="PedalLength" class="col-md-2 control-label">Pedal Length</label>
+            <div class="col-md-6">
+                <input asp-for="PedalLength" class="form-control" placeholder="Enter Pedal Length" />
+                <span asp-validation-for="PedalLength" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PedalWidth" class="col-md-2 control-label">Pedal Width</label>
+            <div class="col-md-6">
+                <input asp-for="PedalWidth" class="form-control" placeholder="Enter Pedal Width" />
+                <span asp-validation-for="PedalWidth" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Type" class="col-md-2 control-label">Type</label>
+            <div class="col-md-6">
+                <input asp-for="Type" class="form-control" placeholder="Enter Type" />
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="btn-group col-md-offset-2 col-md-6">
+                <input class="btn btn-default" type="submit" value="Return" asp-controller="Flower" asp-action="List" />
+                <input class="btn btn-success" type="submit" value="Update" />
+            </div>
+        </div>
+    </form>
+</div>

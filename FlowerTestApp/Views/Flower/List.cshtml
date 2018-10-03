@@ -1,0 +1,102 @@
+﻿@using FlowerTestApp.ViewModel;
+@model IEnumerable<FlowerViewModel>
+
+<div class="row">
+    <div class="col-md-4">
+        <a class="btn btn-success mt-5" style="margin: 10px" asp-controller="Flower" asp-action="Create">Add Flower to Training Data</a>
+        <table class="table table-striped table-hover ">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Pedal Length</th>
+                    <th>Pedal Height</th>
+                    <th>Type</th>
+                    <th>Edit Flower</th>
+                    <th>Delete Flower</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var flowerVM in Model)
+                {
+                    <tr>
+                        <td>@flowerVM.Flower.FlowerId</td>
+                        <td>@flowerVM.Flower.PedalLength</td>
+                        <td>@flowerVM.Flower.PedalWidth</td>
+                        <td>@flowerVM.Flower.Type</td>
+                        <td><a class="btn btn-info" asp-area="" asp-controller="Flower" asp-action="Update" asp-route-id="@flowerVM.Flower.FlowerId">Edit</a></td>
+                        <td><a class="btn btn-danger" asp-area="" asp-controller="Flower" asp-action="Delete" asp-route-id="@flowerVM.Flower.FlowerId">Delete</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <h3>Train Data</h3>
+        <label>Total Flowers: @ViewBag.FlowerCount</label>
+        <form asp-controller="Flower" asp-action="Train" method="POST">
+            <button class="btn btn-primary" type="submit">Train Using Training Data</button>
+        </form>
+        <label>Weight 1: @ViewBag.Weight1</label>
+        <br />
+        <label>Weight 2: @ViewBag.Weight2</label>
+        <br />
+        <label>Bias: @ViewBag.Bias</label>
+    </div>
+    <div class="col-md-4">
+        <h3>Run Test in Respect to Trained Values</h3>
+        <p>Result will be 1 or 0 depending on the what the system thinks it is.</p>
+        <p>Accuracy will be between 1 or 0 where the closer the number is to the result the more confident the guess is.</p>
+        <label>Result: @ViewBag.Result</label>
+        <br />
+        <label>Accuracy: @ViewBag.Accuracy</label>
+        <hr />
+        @using (Html.BeginForm("Run_Test", "Flower", FormMethod.Post))
+        {
+            <input type="text" class="form-control" name="Len" id="Len" placeholder="Length" />
+            <br />
+            <input type="text" class="form-control" name="Wid" id="Wid" placeholder="Width" />
+            <br />
+            <input type="submit" class="btn btn-primary" value="Run Test" />
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="chart_div" style="width: 100%; height: 100%;"></div>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', { 'packages': ['corechart'] });
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var jsArray = []
+        jsArray.push(['Length', 'Width', {'type': 'string', 'role': 'style'}])
+        @foreach (var item in Model)
+        {
+            @:var style = 'point {size: 5; fill-color: green}'
+            if (item.Flower.Type > 0)
+            {
+                @:style = 'point {size: 5; fill-color: red}'
+            }
+
+            @:jsArray.push([@item.Flower.PedalLength,@item.Flower.PedalWidth, style]);
+        }
+        var data = google.visualization.arrayToDataTable(
+            jsArray
+        );
+        var options = {
+            title: 'Flowers',
+            hAxis: { title: 'Pedal Length', minValue: 0, maxValue: 6 },
+            vAxis: { title: 'Pedal Width', minValue: 0, maxValue: 6 },
+            legend: 'none'
+        };
+        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+</script>
